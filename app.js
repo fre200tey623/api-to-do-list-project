@@ -5,7 +5,7 @@ const app = express();
 
 app.get('/', async function(req, res){
   try{
-    await sql`SELECT * FROM tarefas`
+    await sql`SELECT * FROM tarefas ORDER BY data_criacao DESC`
   .then((result) => {
     res.status(200).json(result);
   });
