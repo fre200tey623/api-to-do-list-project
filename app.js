@@ -2,19 +2,25 @@ import express from 'express';
 import { sql } from './db.js';
 
 const app = express();
+app.use(express.json());
 
-app.get('/', async function(req, res){
-  try{
-    await sql`SELECT * FROM tarefas ORDER BY data_criacao DESC`
-  .then((result) => {
+app.post('/', async function(req, res) {
+  try {
+    const cor = req.body.cor;
+    let result;
+
+    if (cor) {
+      result = await sql`SELECT * FROM tarefas WHERE cor ILIKE '%' || ${cor} || '%'`;
+    } else {
+      result = await sql`SELECT * FROM tarefas ORDER BY data_criacao DESC`;
+    }
+
     res.status(200).json(result);
-  });
-  }
-  catch(err){
+  } catch(err) {
     console.log(err);
     res.status(500).send('Erro ao acessar o banco de dados');
   }
-})
+});
 
 app.get('/:id', async function(req, res){
     const { id } = req.params;
