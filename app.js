@@ -1,5 +1,7 @@
 import express from 'express';
 import { sql } from './db.js';
+//import swaggerUi from 'swagger-ui-express';
+//import swaggerDocument from "./swagger-output.json" assert { type: "json" }
 
 const app = express();
 app.use(express.json());
@@ -38,15 +40,18 @@ app.get('/:id', async function(req, res){
   }
 )
 
-app.post('/', async function(req, res){
-  const { titulo, descricao, situacao, data_criacao, data_finalizacao } = req.body;
+app.post('/tarefa', async function(req, res){
+  const { titulo, descricao, situacao, cor ,data_criacao, data_finalizacao } = req.body;
+  
+  console.log(titulo, descricao, situacao, cor ,data_criacao, data_finalizacao);
   try{
-    await sql`
-    INSERT INTO tarefas (titulo, descricao, situacao, data_criacao, data_finalizacao)
-    VALUES (${titulo}, ${descricao}, ${situacao}, ${data_criacao}, ${data_finalizacao});
+    let result = await sql`
+    INSERT INTO tarefas (titulo, descricao, cor ,data_criacao)
+    VALUES (${titulo}, ${descricao}, ${cor} ,${data_criacao});
     `.then(() => {
-      res.status(201).send('Tarefa criada com sucesso!');
+      res.status(201).json('Tarefa criada com sucesso!');
     });
+    console.log(result);
   }
   catch(err){
     console.log(err);
@@ -54,6 +59,10 @@ app.post('/', async function(req, res){
   }
 })
 
+
+
+// app.use('/api-docs', swaggerUi.serve);
+// app.use('/api-docs', swaggerUi.setup(swaggerDocument));
 
 app.listen(3333, () => {
   console.log('O servidor esta rodando na porta 3333');
